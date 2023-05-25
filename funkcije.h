@@ -1,24 +1,20 @@
-#ifndef FUNKCIJE_H
-#define FUNKCIJE_H
+#ifndef HEADER_H
+#define HEADER_H
 
-#define MAX_PARFEMA 100
+#define MAX_NAZIV 50
+#define MAX_PROIZVODJAC 50
 
-struct Parfem {
-    char naziv[50];
-    char marka[50];
+typedef struct {
+    int id;
+    char naziv[MAX_NAZIV];
+    char proizvodjac[MAX_PROIZVODJAC];
     float cijena;
-    char miris[50];
     int kolicina;
-};
+} Parfem;
 
-extern struct Parfem skladiste[MAX_PARFEMA];
-extern int brojParfema;
+void kreiranjeDatoteke(const char* const ime);
+void dodajParfem(const char* const ime);
+void ispisiPodatke(const char* const ime);
 
-int izbornik();
-void dodajParfem();
-void spremiPodatkeUDatoteku(const char* imeDatoteke);
-int izbornik();
-void ispisiParfeme();
-void kreirajDatoteku(const char* imeDatoteke);
-void provjeriKreirajDatoteku(const char* imeDatoteke);
-#endif
+
+#endif 

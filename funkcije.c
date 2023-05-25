@@ -1,109 +1,96 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "funkcije.h"
 
-struct Parfem skladiste[MAX_PARFEMA];
-int brojParfema = 0;
+void kreiranjeDatoteke(const char* const ime) {
+    FILE* fp = fopen(ime, "rb");
 
-void kreirajDatoteku(const char* imeDatoteke) {
-    FILE* datoteka = fopen(imeDatoteke, "w");
+   
+    if (fp == NULL) {
+        fclose(fp);
+        fp = fopen(ime, "wb");
 
-    if (datoteka == NULL) {
-        printf("Greška pri otvaranju datoteke.\n");
-        return;
-    }
+        int brojParfema = 0; 
 
-    for (int i = 0; i < brojParfema; i++) {
-        fprintf(datoteka, "Naziv: %s\n", skladiste[i].naziv);
-        fprintf(datoteka, "Marka: %s\n", skladiste[i].marka);
-        fprintf(datoteka, "Cijena: %.2f\n", skladiste[i].cijena);
-        fprintf(datoteka, "Miris: %s\n", skladiste[i].miris);
-        fprintf(datoteka, "Koli?ina: %d\n\n", skladiste[i].kolicina);
-    }
+        fwrite(&brojParfema, sizeof(int), 1, fp);
 
-    fclose(datoteka);
-
-    printf("Podaci o parfemima uspješno spremljeni u datoteku '%s'.\n", imeDatoteke);
-}
-
-void provjeriKreirajDatoteku(const char* imeDatoteke) {
-    FILE* datoteka = fopen(imeDatoteke, "r");
-    if (datoteka == NULL) {
-        kreirajDatoteku(imeDatoteke);
+        fclose(fp);
     }
     else {
-        fclose(datoteka);
+        fclose(fp);
     }
 }
+void dodajParfem(const char* const ime) {
+    FILE* fp = fopen(ime, "rb+");
 
-
-void dodajParfem() {
-    if (brojParfema >= MAX_PARFEMA) {
-        printf("Skladiste parfema je puno. Nije moguce dodati vise parfema.\n");
-        return;
+    if (fp == NULL) {
+        perror("Dodavanje parfema u datoteku");
+        exit(EXIT_FAILURE);
     }
 
-    struct Parfem noviParfem;
+    int brojParfema=0;
+    fread(&brojParfema, sizeof(int), 1, fp);
+    printf("Broj parfema: %d\n\n", brojParfema);
+
+    Parfem noviParfem;
+    noviParfem.id = brojParfema + 1;
 
     printf("Unesite naziv parfema: ");
-    scanf("%s", noviParfem.naziv);
+    scanf("%49s", noviParfem.naziv);
 
-    printf("Unesite marku parfema: ");
-    scanf("%s", noviParfem.marka);
+    printf("Unesite proizvodjaca parfema: ");
+    scanf("%49s", noviParfem.proizvodjac);
 
     printf("Unesite cijenu parfema: ");
     scanf("%f", &noviParfem.cijena);
 
-    printf("Unesite miris parfema: ");
-    scanf("%s", noviParfem.miris);
-
     printf("Unesite kolicinu parfema: ");
     scanf("%d", &noviParfem.kolicina);
 
-    skladiste[brojParfema++] = noviParfem;
+    fseek(fp, sizeof(int), SEEK_SET);  
+    fwrite(&noviParfem, sizeof(Parfem), 1, fp);
+    printf("Novi parfem dodan.\n\n");
 
-    printf("Parfem uspjesno dodan u skladiste.\n");
+    rewind(fp);
+    brojParfema++;
+
+    fwrite(&brojParfema, sizeof(int), 1, fp);
+
+    fclose(fp);
 }
 
-void spremiPodatkeUDatoteku(const char* imeDatoteke) {
-    FILE* datoteka = fopen(imeDatoteke, "w");
+void ispisiPodatke(const char* const ime) {
+    FILE* fp = fopen(ime, "rb");
 
-    if (datoteka == NULL) {
-        printf("Greška pri otvaranju datoteke.\n");
-        return;
+    if (fp == NULL) {
+        perror("Otvaranje datoteke za ispis podataka");
+        exit(EXIT_FAILURE);
     }
+
+    int brojParfema;
+    fread(&brojParfema, sizeof(int), 1, fp);
+
+    printf("Broj parfema: %d\n\n", brojParfema);
+
+    printf("------ Podaci o parfemima ------\n");
 
     for (int i = 0; i < brojParfema; i++) {
-        fprintf(datoteka, "Naziv: %s\n", skladiste[i].naziv);
-        fprintf(datoteka, "Marka: %s\n", skladiste[i].marka);
-        fprintf(datoteka, "Cijena: %.2f\n", skladiste[i].cijena);
-        fprintf(datoteka, "Miris: %s\n", skladiste[i].miris);
-        fprintf(datoteka, "Koli?ina: %d\n\n", skladiste[i].kolicina);
+        Parfem parfem;
+
+        fread(&parfem, sizeof(Parfem), 1, fp);
+
+        printf("ID: %d\n", parfem.id);
+        printf("Naziv: %s\n", parfem.naziv);
+        printf("Proizvo?a?: %s\n", parfem.proizvodjac);
+        printf("Cijena: %.2f\n", parfem.cijena);
+        printf("Koli?ina: %d\n", parfem.kolicina);
+        printf("-----------------------------\n");
     }
 
-    fclose(datoteka);
-
-    printf("Podaci o parfemima uspješno spremljeni u datoteku '%s'.\n", imeDatoteke);
+    fclose(fp);
 }
 
-void ispisiParfeme() {
-    if (brojParfema == 0) {
-        printf("Skladiste parfema je prazno.\n");
-        return;
-    }
 
-    printf("Popis parfema:\n");
-    printf("---------------------------\n");
-
-    for (int i = 0; i < brojParfema; i++) {
-        printf("Parfem %d:\n", i + 1);
-        printf("Naziv: %s\n", skladiste[i].naziv);
-        printf("Marka: %s\n", skladiste[i].marka);
-        printf("Cijena: %.2f\n", skladiste[i].cijena);
-        printf("Miris: %s\n", skladiste[i].miris);
-        printf("Kolicina: %d\n", skladiste[i].kolicina);
-        printf("---------------------------\n");
-    }
-}
 

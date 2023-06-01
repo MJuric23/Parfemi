@@ -1,32 +1,31 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-typedef struct artikl {
+typedef struct parfem {
 	int id;
-	char kategorija[25];
+	char spol[25];
 	char ime[25];
 	int cijena;
 	int kolicina;
-}ARTIKL;
+}PARFEM;
 
 int izbornik();
 int izbornikPret();
 int izbornikSort();
 void kreiranjeDat();
-void dodavanjeArt();
+void dodavanjePar();
 void azuriranje();
-void* ucitavanjeArtikala();
-void ispisivanje(ARTIKL*);
-void* pretragaIme(ARTIKL*);
-void* pretragaCijena(ARTIKL*);
-void* pretragaKategorija(ARTIKL*);
-void zamjena(ARTIKL*, ARTIKL*);
-void selectionSortNajjefCijena(ARTIKL*);
-void selectionSortNajskupCijena(ARTIKL*);
+void* ucitavanjeParfema();
+void ispisivanje(PARFEM*);
+void* pretragaIme(PARFEM*);
+void* pretragaCijena(PARFEM*);
+void* pretragaSpol(PARFEM*);
+void zamjena(PARFEM*, PARFEM*);
+void selectionSortNajjefCijena(PARFEM*);
+void selectionSortNajskupCijena(PARFEM*);
 
-void brisanjeArt(ARTIKL*);
-
-void brisanjeDat(ARTIKL*);
+void brisanjePar(PARFEM*);
+void brisanjeDat(PARFEM*);
 
 
 #endif // HEADER_H

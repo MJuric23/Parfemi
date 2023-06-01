@@ -4,14 +4,14 @@
 #include <string.h>
 #include "header.h"
 
-static int brojArtikala = 0;
+static int brojParfema = 0;
 static int i;
 static int j;
 static int br = 0;
 
 int izbornik() {
 	int uvijet = 0;
-	static ARTIKL* polje = NULL;
+	static PARFEM* polje = NULL;
 
 	printf("Odaberite jednu od opcija.");
 	printf("\n***************************\n");
@@ -29,11 +29,11 @@ int izbornik() {
 	system("cls");
 
 	switch (uvijet) {
-	case 1:	ucitavanjeArtikala();
-		if (brojArtikala == 0) {
+	case 1:	ucitavanjeParfema();
+		if (brojParfema == 0) {
 			kreiranjeDat();
 		}
-		dodavanjeArt();
+		dodavanjePar();
 		break;
 
 	case 2: azuriranje(); break;
@@ -42,7 +42,7 @@ int izbornik() {
 		free(polje);
 		polje = NULL;
 	}
-		  polje = (ARTIKL*)ucitavanjeArtikala();
+		  polje = (PARFEM*)ucitavanjeParfema();
 		  ispisivanje(polje);
 		  break;
 
@@ -57,9 +57,9 @@ int izbornik() {
 		break;
 
 	case 6: if (polje == NULL)
-		printf("Nema unesenih artikala\n\n");
+		printf("Nema unesenih parfema\n\n");
 		  else
-		brisanjeArt(polje);
+		brisanjePar(polje);
 		break;
 
 	case 7: brisanjeDat(polje);
@@ -73,11 +73,11 @@ int izbornik() {
 
 int izbornikPret() {
 	int uvijet = 0;
-	ARTIKL* polje = NULL;
-	polje = (ARTIKL*)ucitavanjeArtikala();
+	PARFEM* polje = NULL;
+	polje = (PARFEM*)ucitavanjeParfema();
 	printf("Pretrazivanje.\n\n");
 	printf("Opcija 1: Cijena\n");
-	printf("Opcija 2: Kategorija\n");
+	printf("Opcija 2: Spol\n");
 	printf("Opcija 3: Ime\n");
 	printf("Opcija 4: Povratak\n");
 	printf("ODABIR: ");
@@ -86,7 +86,7 @@ int izbornikPret() {
 
 	switch (uvijet) {
 	case 1: pretragaCijena(polje); break;
-	case 2: pretragaKategorija(polje); break;
+	case 2: pretragaSpol(polje); break;
 	case 3:	pretragaIme(polje); break;
 	case 4: return 90;
 	default: printf("\nPogresan unos!\n");
@@ -98,8 +98,8 @@ int izbornikPret() {
 
 int izbornikSort() {
 	int uvijet = 0;
-	ARTIKL* polje = NULL;
-	polje = (ARTIKL*)ucitavanjeArtikala();
+	PARFEM* polje = NULL;
+	polje = (PARFEM*)ucitavanjeParfema();
 	printf("Sortiranje.\n\n");
 	printf("Opcija 1: Cijena od najjeftinijeg do najskupljeg\n");
 	printf("Opcija 2: Cijena od najskupljeg do najjeftinijeg\n");
@@ -121,175 +121,176 @@ int izbornikSort() {
 
 void kreiranjeDat() {
 	FILE* fp = NULL;
-	fp = fopen("artikli.bin", "wb");
+	fp = fopen("parfemi.bin", "wb");
 
 	if (fp == NULL) {
 		perror("Kreiranje");
+		
 	}
 
-	fwrite(&brojArtikala, sizeof(int), 1, fp);
+	fwrite(&brojParfema, sizeof(int), 1, fp);
 	fclose(fp);
 }
 
-void dodavanjeArt() {
+void dodavanjePar() {
 	FILE* fp = NULL;
-	fp = fopen("artikli.bin", "rb+");
+	fp = fopen("parfemi.bin", "rb+");
 
 	if (fp == NULL)
 		perror("Dodavanje");
 
-	fread(&brojArtikala, sizeof(int), 1, fp);
-	printf("Trenutni broj artikala: %d", brojArtikala);
+	fread(&brojParfema, sizeof(int), 1, fp);
+	printf("Trenutni broj parfema: %d", brojParfema);
 
-	ARTIKL artikli;
-	artikli.id = brojArtikala + 1;
+	PARFEM parfemi;
+	parfemi.id = brojParfema + 1;
 	br++;
 	getchar();
-	printf("\nUnesite kategoriju artikla: ");
-	scanf("%24[^\n]", artikli.kategorija);
+	printf("\nUnesite spol parfema: ");
+	scanf("%24[^\n]", parfemi.spol);
 	getchar();
-	printf("\nUnesite ime artikla: ");
-	scanf("%24[^\n]", artikli.ime);
-	printf("\nUnesite cijenu artikla: ");
-	scanf("%d", &artikli.cijena);
-	printf("\nUnesite kolicinu artikla: ");
-	scanf("%d", &artikli.kolicina);
-	fseek(fp, sizeof(ARTIKL) * brojArtikala, SEEK_CUR);
-	fwrite(&artikli, sizeof(ARTIKL), 1, fp);
+	printf("\nUnesite ime parfema: ");
+	scanf("%24[^\n]", parfemi.ime);
+	printf("\nUnesite cijenu parfema: ");
+	scanf("%d", &parfemi.cijena);
+	printf("\nUnesite kolicinu parfema: ");
+	scanf("%d", &parfemi.kolicina);
+	fseek(fp, sizeof(PARFEM) * brojParfema, SEEK_CUR);
+	fwrite(&parfemi, sizeof(PARFEM), 1, fp);
 	rewind(fp);
-	brojArtikala++;
-	fwrite(&brojArtikala, sizeof(int), 1, fp);
+	brojParfema++;
+	fwrite(&brojParfema, sizeof(int), 1, fp);
 	fclose(fp);
 }
 
 void azuriranje() {
 	FILE* fp = NULL;
 	int ispravak;
-	fp = fopen("artikli.bin", "rb+");
+	fp = fopen("parfemi.bin", "rb+");
 	if (fp == NULL)
-		printf("Nema unesenih artikala\n\n");
+		printf("Nema unesenih parfema\n\n");
 	else {
-		printf("Unesi broj artikla koji zelite ispraviti.\n");
+		printf("Unesi broj parfema koji zelite ispraviti.\n");
 		scanf("%d", &ispravak);
-		fseek(fp, sizeof(int) + (sizeof(ARTIKL) * (ispravak - 1)), SEEK_SET);
-		ARTIKL ispravljenArtikl;
-		ispravljenArtikl.id = ispravak;
+		fseek(fp, sizeof(int) + (sizeof(PARFEM) * (ispravak - 1)), SEEK_SET);
+		PARFEM ispravljenParfem;
+		ispravljenParfem.id = ispravak;
 		getchar();
-		printf("\nUnesite ispravljenu kategoriju artikla: ");
-		scanf("%24[^\n]", ispravljenArtikl.kategorija);
+		printf("\nUnesite ispravljeni spol parfema: ");
+		scanf("%24[^\n]", ispravljenParfem.spol);
 		getchar();
-		printf("\nUnesite ime artikla: ");
-		scanf("%24[^\n]", ispravljenArtikl.ime);
-		printf("\nUnesite cijenu artikla: ");
-		scanf("%d", &ispravljenArtikl.cijena);
-		printf("\nUnesite kolicinu artikla: ");
-		scanf("%d", &ispravljenArtikl.kolicina);
-		fwrite(&ispravljenArtikl, sizeof(ARTIKL), 1, fp);
+		printf("\nUnesite ime parfema: ");
+		scanf("%24[^\n]", ispravljenParfem.ime);
+		printf("\nUnesite cijenu parfema: ");
+		scanf("%d", &ispravljenParfem.cijena);
+		printf("\nUnesite kolicinu parfema: ");
+		scanf("%d", &ispravljenParfem.kolicina);
+		fwrite(&ispravljenParfem, sizeof(PARFEM), 1, fp);
 		rewind(fp);
-		fwrite(&brojArtikala, sizeof(int), 1, fp);
+		fwrite(&brojParfema, sizeof(int), 1, fp);
 		fclose(fp);
 
 	}
 }
 
-void* ucitavanjeArtikala() {
-	FILE* fp = fopen("artikli.bin", "rb");
+void* ucitavanjeParfema() {
+	FILE* fp = fopen("parfemi.bin", "rb");
 	if (fp == NULL) {
-		printf("Nema unesenih artikala\n\n");
+		printf("Nema unesenih parfema\n\n");
 		return NULL;
 	}
-	fread(&brojArtikala, sizeof(int), 1, fp);
-	ARTIKL* polje = NULL;
-	polje = (ARTIKL*)calloc(brojArtikala, sizeof(ARTIKL));
+	fread(&brojParfema, sizeof(int), 1, fp);
+	PARFEM* polje = NULL;
+	polje = (PARFEM*)calloc(brojParfema, sizeof(PARFEM));
 	if (polje == NULL) {
 		perror("Zauzimanje memorije");
 		return NULL;
 	}
-	fread(polje, sizeof(ARTIKL), brojArtikala, fp);
+	fread(polje, sizeof(PARFEM), brojParfema, fp);
 	fclose(fp);
 	return polje;
 }
 
-void ispisivanje(ARTIKL* polje) {
-	for (i = 0; i < brojArtikala; i++)
+void ispisivanje(PARFEM* polje) {
+	for (i = 0; i < brojParfema; i++)
 	{
-		printf("Artikl broj %d:\tID: %d\tKategorija: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", i + 1, (polje + i)->id, (polje + i)->kategorija, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
+		printf("Parfem broj %d:\tID: %d\tspol: %s\tIme: %s\tCijena:  %d\tKolicina: %d\n", i + 1, (polje + i)->id, (polje + i)->spol, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
 	}
 }
 
-void* pretragaIme(ARTIKL* polje) {
-	char trazenoIme[25]={0};
+void* pretragaIme(PARFEM* polje) {
+	char trazenoIme[25] = { 0 };
 	int brojac = 0;
 
-	printf("Upisite ime artikla koje zelite pronaci.\n");
+	printf("Upisite ime parfema koje zelite pronaci.\n");
 	getchar();
 	scanf("%24[^\n]", trazenoIme);
 
-	for (i = 0; i < brojArtikala; i++) {
+	for (i = 0; i < brojParfema; i++) {
 		if (!strcmp(trazenoIme, (polje + i)->ime)) {
-			printf("\nIme artikla je pronadeno!\n\n");
-			printf("Kategorija: %s\tIme: %s\tCijena: %d\tKolicina: %d\n\n", (polje + i)->kategorija, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
+			printf("\nIme parfema je pronadeno!\n\n");
+			printf("spol: %s\tIme: %s\tCijena: %d\tKolicina: %d\n\n", (polje + i)->spol, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
 			brojac++;
 		}
 	}
 	if (brojac == 0)
-		printf("\nIme artikla nije pronadeno!\n\n");
+		printf("\nIme parfema nije pronadeno!\n\n");
 	return NULL;
 }
 
-void* pretragaKategorija(ARTIKL* polje) {
-	char trazenaKategorija[25]={0};
+void* pretragaSpol(PARFEM* polje) {
+	char trazenaSpol[25] = { 0 };
 	int brojac = 0;
 
-	printf("Upisite kategoriju artikla koju zelite pronaci.\n");
+	printf("Upisite spol (Muski/Zenski/Unisex) koju zelite pronaci.\n");
 	getchar();
-	scanf("%24[^\n]", trazenaKategorija);
+	scanf("%24[^\n]", trazenaSpol);
 
-	for (i = 0; i < brojArtikala; i++) {
-		if (!strcmp(trazenaKategorija, (polje + i)->kategorija)) {
-			printf("\nKategorija artikla je pronadena!\n\n");
-			printf("Kategorija: %s\tIme: %s\tCijena: %d\tKolicina: %d\n\n", (polje + i)->kategorija, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
+	for (i = 0; i < brojParfema; i++) {
+		if (!strcmp(trazenaSpol, (polje + i)->spol)) {
+			printf("\npronadeno!\n\n");
+			printf("spol: %s\tIme: %s\tCijena: %d\tKolicina: %d\n\n", (polje + i)->spol, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
 			brojac++;
 		}
 	}
 	if (brojac == 0)
-		printf("\nKategorija artikla nije pronadena!\n\n");
+		printf("\nnije pronadeno!\n\n");
 	return NULL;
 }
 
-void* pretragaCijena(ARTIKL* polje) {
+void* pretragaCijena(PARFEM* polje) {
 	int trazenaCijena;
 	int brojac = 0;
 
-	printf("Upisite cijenu artikla koju zelite pronaci.\n");
+	printf("Upisite cijenu parfema koju zelite pronaci.\n");
 	scanf("%d", &trazenaCijena);
 
-	for (i = 0; i < brojArtikala; i++) {
+	for (i = 0; i < brojParfema; i++) {
 		if (trazenaCijena == (polje + i)->cijena) {
-			printf("\nCijena artikla je pronadena!\n\n");
-			printf("Kategorija: %s\tIme: %s\tCijena: %d\tKolicina: %d\n\n", (polje + i)->kategorija, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
+			printf("\nCijena parfema je pronadena!\n\n");
+			printf("spol: %s\tIme: %s\tCijena: %d\tKolicina: %d\n\n", (polje + i)->spol, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
 			brojac++;
 		}
 	}
 	if (brojac == 0)
-		printf("\nCijena artikla nije pronadena!\n\n");
+		printf("\nCijena parfema nije pronadena!\n\n");
 	return NULL;
 }
 
-void zamjena(ARTIKL* veci, ARTIKL* manji) {
-	ARTIKL temp = { 0 };
+void zamjena(PARFEM* veci, PARFEM* manji) {
+	PARFEM temp = { 0 };
 	temp = *manji;
 	*manji = *veci;
 	*veci = temp;
 }
 
-void selectionSortNajjefCijena(ARTIKL* polje) {
+void selectionSortNajjefCijena(PARFEM* polje) {
 	int min = -1;
-	printf("Sortirani artikli po cijeni od najjeftinijeg do najskupljeg.\n");
-	for (i = 0; i < brojArtikala - 1; i++)
+	printf("Sortirani parfemi po cijeni od najjeftinijeg do najskupljeg.\n");
+	for (i = 0; i < brojParfema - 1; i++)
 	{
 		min = i;
-		for (j = i + 1; j < brojArtikala; j++)
+		for (j = i + 1; j < brojParfema; j++)
 		{
 			if ((polje + j)->cijena < (polje + min)->cijena) {
 				min = j;
@@ -298,31 +299,31 @@ void selectionSortNajjefCijena(ARTIKL* polje) {
 		zamjena((polje + i), (polje + min));
 	}
 
-	for (i = 0; i < brojArtikala; i++)
+	for (i = 0; i < brojParfema; i++)
 	{
 		if (i == 0) {
-			printf("Kategorija: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", (polje + i)->kategorija, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
+			printf("Spol: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", (polje + i)->spol, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
 
 		}
-		else if (i > 0 && i < brojArtikala - 1) {
-			printf("Kategorija: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", (polje + i)->kategorija, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
+		else if (i > 0 && i < brojParfema - 1) {
+			printf("Spol: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", (polje + i)->spol, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
 
 		}
 		else {
-			printf("Kategorija: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", (polje + i)->kategorija, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
+			printf("Spol: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", (polje + i)->spol, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
 
 		}
 	}
 	printf("\n");
 }
 
-void selectionSortNajskupCijena(ARTIKL* polje) {
+void selectionSortNajskupCijena(PARFEM* polje) {
 	int min = -1;
-	printf("Sortirani artikli po cijeni od najskupljeg do najjeftinijeg.\n");
-	for (i = 0; i < brojArtikala - 1; i++)
+	printf("Sortirani parfemi po cijeni od najskupljeg do najjeftinijeg.\n");
+	for (i = 0; i < brojParfema - 1; i++)
 	{
 		min = i;
-		for (j = i + 1; j < brojArtikala; j++)
+		for (j = i + 1; j < brojParfema; j++)
 		{
 			if ((polje + j)->cijena > (polje + min)->cijena) {
 				min = j;
@@ -331,43 +332,43 @@ void selectionSortNajskupCijena(ARTIKL* polje) {
 		zamjena((polje + i), (polje + min));
 	}
 
-	for (i = 0; i < brojArtikala; i++)
+	for (i = 0; i < brojParfema; i++)
 	{
 		if (i == 0) {
-			printf("Kategorija: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", (polje + i)->kategorija, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
+			printf("spol: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", (polje + i)->spol, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
 
 		}
-		else if (i > 0 && i < brojArtikala - 1) {
-			printf("Kategorija: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", (polje + i)->kategorija, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
+		else if (i > 0 && i < brojParfema - 1) {
+			printf("spol: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", (polje + i)->spol, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
 
 		}
 		else {
-			printf("Kategorija: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", (polje + i)->kategorija, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
+			printf("spol: %s\tIme: %s\tCijena: %d\tKolicina: %d\n", (polje + i)->spol, (polje + i)->ime, (polje + i)->cijena, (polje + i)->kolicina);
 
 		}
 	}
 	printf("\n");
 }
 
-void brisanjeArt(ARTIKL* polje) {
+void brisanjePar(PARFEM* polje) {
 	FILE* fp = NULL;
-	fp = fopen("artikli.bin", "wb");
+	fp = fopen("parfemi.bin", "wb");
 	if (fp == NULL) {
-		perror("  Brisanje artikala");
+		perror("  Brisanje parfema");
 	}
 
 	rewind(fp);
 	fseek(fp, sizeof(int), SEEK_CUR);
 
 	int brojac = 0;
-	int trazeniArt;
+	int trazeniPar;
 
-	printf("\nUnesi ID artikla koji zelite obrisati\n");
-	scanf("%d", &trazeniArt);
+	printf("\nUnesi ID parfema koji zelite obrisati\n");
+	scanf("%d", &trazeniPar);
 
-	for (i = 0; i < brojArtikala; i++) {
-		if (trazeniArt != (polje + i)->id) {
-			fwrite((polje + i), sizeof(ARTIKL), 1, fp);
+	for (i = 0; i < brojParfema; i++) {
+		if (trazeniPar != (polje + i)->id) {
+			fwrite((polje + i), sizeof(PARFEM), 1, fp);
 			brojac++;
 		}
 	}
@@ -376,7 +377,7 @@ void brisanjeArt(ARTIKL* polje) {
 	fclose(fp);
 }
 
-void brisanjeDat(ARTIKL* polje) {
+void brisanjeDat(PARFEM* polje) {
 	printf("Zelite li pri izlasku programa izbrisati datoteku ili zadrzati?\n");
 	printf("Ako zelite izbrisati datoteku upisite \"da\", u suprotnome upisite \"ne\" te datoteku zadrzavate.\n\n");
 
@@ -384,7 +385,7 @@ void brisanjeDat(ARTIKL* polje) {
 	scanf("%2s", upit);
 
 	if (!strcmp("da", upit)) {
-		remove("artikli.bin") == 0 ? printf("\nUspjesno obrisana datoteka!\n") : printf("\nNeuspjesno brisanje datoteke ili datoteka uopce ne postoji!\n");
+		remove("parfemi.bin") == 0 ? printf("\nUspjesno obrisana datoteka!\n") : printf("\nNeuspjesno brisanje datoteke ili datoteka uopce ne postoji!\n");
 		printf("\nIzlaz iz programa!!\n");
 		free(polje);
 

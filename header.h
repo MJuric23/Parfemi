@@ -25,8 +25,7 @@ void selectionSortNajjefCijena(PARFEM*);
 void selectionSortNajskupCijena(PARFEM*);
 
 void brisanjePar(PARFEM*);
-void brisanjeDat(PARFEM*);
+
 
 
 #endif // HEADER_H
-

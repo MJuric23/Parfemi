@@ -62,10 +62,19 @@ int izbornik() {
 		brisanjePar(polje);
 		break;
 
-	case 7: brisanjeDat(polje);
-		return 99;
+	case 7:
+		printf("Zelite li izaci iz programa? (da/ne)\n");
+		char odgovor[3] = { '\0' };
+		scanf("%2s", odgovor);
+		if (strcmp("da", odgovor) == 0) {
+			free(polje);
+			return 99;
+
+		}
 		break;
-	default: printf("\nPogresan unos!\n\n");
+
+	default:
+		printf("\nPogresan unos!\n\n");
 	}
 
 	return uvijet;
@@ -125,19 +134,21 @@ void kreiranjeDat() {
 
 	if (fp == NULL) {
 		perror("Kreiranje");
-		
 	}
-
-	fwrite(&brojParfema, sizeof(int), 1, fp);
-	fclose(fp);
+	else {
+		fwrite(&brojParfema, sizeof(int), 1, fp);
+		fclose(fp);
+	}
 }
 
 void dodavanjePar() {
 	FILE* fp = NULL;
 	fp = fopen("parfemi.bin", "rb+");
 
-	if (fp == NULL)
+	if (fp == NULL) {
 		perror("Dodavanje");
+		exit(1);
+	}
 
 	fread(&brojParfema, sizeof(int), 1, fp);
 	printf("Trenutni broj parfema: %d", brojParfema);
@@ -355,6 +366,7 @@ void brisanjePar(PARFEM* polje) {
 	fp = fopen("parfemi.bin", "wb");
 	if (fp == NULL) {
 		perror("  Brisanje parfema");
+		exit(1);
 	}
 
 	rewind(fp);
@@ -377,18 +389,3 @@ void brisanjePar(PARFEM* polje) {
 	fclose(fp);
 }
 
-void brisanjeDat(PARFEM* polje) {
-	printf("Zelite li pri izlasku programa izbrisati datoteku ili zadrzati?\n");
-	printf("Ako zelite izbrisati datoteku upisite \"da\", u suprotnome upisite \"ne\" te datoteku zadrzavate.\n\n");
-
-	char upit[3] = { '\0' };
-	scanf("%2s", upit);
-
-	if (!strcmp("da", upit)) {
-		remove("parfemi.bin") == 0 ? printf("\nUspjesno obrisana datoteka!\n") : printf("\nNeuspjesno brisanje datoteke ili datoteka uopce ne postoji!\n");
-		printf("\nIzlaz iz programa!!\n");
-		free(polje);
-
-	}
-	else printf("\nDatoteka zadrzana.\n\nIzlaz iz programa!!\n");
-}
